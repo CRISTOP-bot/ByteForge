@@ -1,40 +1,23 @@
 #!/usr/bin/env python3
-"""Train a tiny character n-gram language model from scratch."""
+"""Train ByteForge's portable token n-gram model from scratch."""
 import argparse
-from collections import defaultdict
-import json
+import re
+from collections import Counter
 from pathlib import Path
-
-ORDER = 4
-ROOT = Path(__file__).resolve().parent
-
-
-def train(text: str, order: int = ORDER) -> dict:
-    text = text.strip()
-    if not text:
-        raise ValueError("Training corpus is empty")
-    counts = defaultdict(lambda: defaultdict(int))
-    padded = " " * order + text + " "
-    for i in range(order, len(padded)):
-        context, next_char = padded[i - order:i], padded[i]
-        counts[context][next_char] += 1
-    return {
-        "format": "papuu-char-ngram-v1",
-        "order": order,
-        "characters_seen": len(text),
-        "contexts": {ctx: dict(freqs) for ctx, freqs in counts.items()},
-    }
-
-
+ROOT=Path(__file__).resolve().parent
+TOKEN_RE=re.compile(r"[\w]+|[^\w\s]",re.UNICODE)
+def train(text,order=2):
+ if order<1: raise ValueError('order must be at least 1')
+ text='\n'.join(line for line in text.splitlines() if line.strip() and not line.lstrip().startswith('#'))
+ tokens=TOKEN_RE.findall(text)
+ if not tokens: raise ValueError('training corpus is empty')
+ vocab=sorted(set(tokens)); ids={t:i for i,t in enumerate(vocab)}; bos=len(vocab); hist=[bos]*order; transitions=Counter()
+ for token in tokens:
+  nxt=ids[token]; transitions[tuple(hist)+(nxt,)]+=1; hist=hist[1:]+[nxt]
+ lines=[f'BYTEFORGE_NGRAM_V1\t{order}\t{len(vocab)}\t{bos}']
+ lines += [f'v\t{i}\t{t.encode("utf-8").hex()}' for i,t in enumerate(vocab)]
+ lines += ['n\t'+'\t'.join(map(str,key))+f'\t{count}' for key,count in sorted(transitions.items())]
+ return '\n'.join(lines)+'\n'
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--corpus", type=Path, default=ROOT / "data/corpus.txt")
-    parser.add_argument("--output", type=Path, default=ROOT / "model.json")
-    args = parser.parse_args()
-    model = train(args.corpus.read_text(encoding="utf-8"))
-    args.output.write_text(json.dumps(model, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(f"Entrenado: {model['characters_seen']} caracteres, {len(model['contexts'])} contextos -> {args.output}")
-
-
-if __name__ == "__main__":
-    main()
+ p=argparse.ArgumentParser(description=__doc__);p.add_argument('--corpus',type=Path,default=ROOT/'data/corpus.txt');p.add_argument('--output',type=Path,default=ROOT/'model.bfng');p.add_argument('--order',type=int,default=2);a=p.parse_args();m=train(a.corpus.read_text(encoding='utf-8'),a.order);a.output.write_text(m,encoding='ascii');print(f"ByteForge entrenado: {sum(x.split(chr(9),1)[0]=='n' for x in m.splitlines())} transiciones -> {a.output}")
+if __name__=='__main__':main()
