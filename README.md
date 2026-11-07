@@ -10,7 +10,7 @@ Requiere Python 3.10+ y no instala paquetes:
 
 ```sh
 python train.py
-python chat.py --length 24
+python chat.py --prompt "kernel memory" --length 24
 python -m unittest discover -s tests -v
 ```
 

@@ -19,5 +19,5 @@ def train(text,order=2):
  lines += ['n\t'+'\t'.join(map(str,key))+f'\t{count}' for key,count in sorted(transitions.items())]
  return '\n'.join(lines)+'\n'
 def main():
- p=argparse.ArgumentParser(description=__doc__);p.add_argument('--corpus',type=Path,default=ROOT/'data/corpus.txt');p.add_argument('--output',type=Path,default=ROOT/'model.bfng');p.add_argument('--order',type=int,default=2);a=p.parse_args();m=train(a.corpus.read_text(encoding='utf-8'),a.order);a.output.write_text(m,encoding='ascii');print(f"ByteForge entrenado: {sum(x.split(chr(9),1)[0]=='n' for x in m.splitlines())} transiciones -> {a.output}")
+ p=argparse.ArgumentParser(description=__doc__);p.add_argument('--corpus',type=Path,default=ROOT/'data/corpus.txt');p.add_argument('--output',type=Path,default=ROOT/'model.bfng');p.add_argument('--order',type=int,default=2);a=p.parse_args();m=train(a.corpus.read_text(encoding='utf-8'),a.order);a.output.parent.mkdir(parents=True,exist_ok=True);a.output.write_text(m,encoding='ascii');print(f"ByteForge entrenado: {sum(x.split(chr(9),1)[0]=='n' for x in m.splitlines())} transiciones -> {a.output}")
 if __name__=='__main__':main()

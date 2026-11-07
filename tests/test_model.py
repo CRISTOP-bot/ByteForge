@@ -11,6 +11,19 @@ class ByteForgeTests(unittest.TestCase):
   with tempfile.TemporaryDirectory() as d:
    p=Path(d)/'model.bfng';p.write_text(train('kernel memory kernel process kernel memory',2),encoding='ascii')
    model=load(p);self.assertEqual(model[0],2);self.assertEqual(generate(model,8),generate(model,8));self.assertTrue(generate(model,5))
+ def test_prompt_guides_generation(self):
+  with tempfile.TemporaryDirectory() as d:
+   p=Path(d)/'model.bfng';p.write_text(train('kernel memory kernel memory driver interrupt driver interrupt',1),encoding='ascii')
+   model=load(p);self.assertTrue(generate(model,3,'kernel').startswith('kernel'))
+ def test_unknown_prompt_is_safe(self):
+  with tempfile.TemporaryDirectory() as d:
+   p=Path(d)/'model.bfng';p.write_text(train('kernel memory kernel memory',1),encoding='ascii')
+   self.assertTrue(generate(load(p),2,'unknown-topic').startswith('unknown-topic'))
+ def test_training_is_reproducible_and_comments_are_ignored(self):
+  self.assertEqual(train('# note\nkernel memory kernel'),train('kernel memory kernel'))
+  self.assertEqual(train('kernel memory kernel',2),train('kernel memory kernel',2))
+ def test_order_changes_model_header(self):
+  self.assertIn('BYTEFORGE_NGRAM_V1\t3\t',train('kernel memory process',3))
  def test_reject_empty_corpus_and_bad_order(self):
   with self.assertRaises(ValueError):train('  ')
   with self.assertRaises(ValueError):train('kernel',0)

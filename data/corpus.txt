@@ -52,55 +52,32 @@ Una rutina NASM recibe argumentos conforme a la ABI System V y devuelve el índi
 El firmware y el kernel se comunican mediante estructuras cuya versión y tamaño deben verificarse.
 El código de arranque temprano evita depender de memoria dinámica antes de inicializar el asignador.
 Los mensajes de error deben identificar el subsistema y conservar suficiente contexto para depurar.
-EOF
-cat > scratch/byteforge/train.py <<'EOF'
-#!/usr/bin/env python3
-"""Train ByteForge's portable token n-gram model from scratch."""
-import argparse
-import re
-from collections import Counter, defaultdict
-from pathlib import Path
-
-ROOT = Path(__file__).resolve().parent
-TOKEN_RE = re.compile(r"[\w]+|[^\w\s]", re.UNICODE)
-
-
-def train(text: str, order: int = 2) -> str:
-    if order < 1:
-        raise ValueError("order must be at least 1")
-    tokens = TOKEN_RE.findall(text)
-    if not tokens:
-        raise ValueError("training corpus is empty")
-    vocab = sorted(set(tokens))
-    ids = {token: i for i, token in enumerate(vocab)}
-    counts = Counter(tuple(ids[t] for t in tokens[max(0, i-order):i]) + (ids[tokens[i]],)
-                     for i in range(len(tokens)))
-    # Include all contexts in fixed-width order; left-pad sentence start with <BOS>.
-    bos = len(vocab)
-    transitions = Counter()
-    history = [bos] * order
-    for token in tokens:
-        nxt = ids[token]
-        transitions[tuple(history) + (nxt,)] += 1
-        history = history[1:] + [nxt]
-    lines = [f"BYTEFORGE_NGRAM_V1\t{order}\t{len(vocab)}\t{bos}"]
-    lines += [f"v\t{i}\t{token.encode('utf-8').hex()}" for i, token in enumerate(vocab)]
-    lines += ["n\t" + "\t".join(map(str, key)) + f"\t{count}"
-              for key, count in sorted(transitions.items())]
-    return "\n".join(lines) + "\n"
-
-
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--corpus", type=Path, default=ROOT / "data/corpus.txt")
-    parser.add_argument("--output", type=Path, default=ROOT / "model.bfng")
-    parser.add_argument("--order", type=int, default=2)
-    args = parser.parse_args()
-    model = train(args.corpus.read_text(encoding="utf-8"), args.order)
-    args.output.write_text(model, encoding="ascii")
-    print(f"ByteForge entrenado: {sum(1 for line in model.splitlines() if line.startswith('n\t'))} transiciones -> {args.output}")
-
-
-if __name__ == "__main__":
-    main()
-EOF
+En C, una función debe comprobar los errores de lectura y escritura antes de continuar.
+En C, size_t representa tamaños y longitudes; valida que una suma no se desborde antes de reservar memoria.
+En C, copia los datos del usuario a un búfer del kernel validado antes de procesar una llamada al sistema.
+En C, enumera explícitamente los estados de un proceso para que las transiciones sean auditables.
+En C, una función de asignación devuelve NULL cuando no puede reservar memoria; el llamador debe manejarlo.
+En C, usa const cuando la función no debe modificar el búfer recibido.
+En C, revisa el tamaño de una estructura antes de leerla desde un archivo binario.
+En C, no uses una variable después de liberar el objeto al que apunta.
+En C, comprueba que el índice sea menor que la cantidad de entradas de la tabla.
+En ensamblador x86-64, una rutina de interrupción conserva el estado requerido antes de llamar a código C.
+En ensamblador x86-64, la instrucción ret usa la dirección de retorno en la pila.
+En ensamblador x86-64, el ABI System V pasa los primeros argumentos enteros en RDI RSI RDX RCX R8 y R9.
+En ensamblador x86-64, antes de call alinea la pila según la ABI de la plataforma.
+Un linker script puede ubicar .text .rodata .data y .bss en las regiones de memoria definidas para el kernel.
+El símbolo _start identifica una entrada de bajo nivel solo si el linker script y el cargador acuerdan ese contrato.
+Un Makefile declara dependencias explícitas para recompilar solo los objetos que cambiaron.
+El objetivo clean elimina únicamente los artefactos generados del proyecto.
+Una toolchain cruzada evita enlazar inadvertidamente bibliotecas del sistema anfitrión en un kernel bare metal.
+El comando readelf -h permite inspeccionar el tipo y la arquitectura declarados en una cabecera ELF.
+El comando objdump -d muestra instrucciones desensambladas para revisar código máquina generado.
+QEMU puede arrancar kernels de prueba y registrar la salida serial para automatizar verificaciones.
+Un test de arranque comprueba marcadores observables y un tiempo máximo, y falla ante un kernel que se bloquea.
+Una prueba de memoria debe cubrir asignación, liberación, alineación, agotamiento y límites de direcciones.
+Una prueba de syscall verifica número de llamada, argumentos válidos, argumentos inválidos y códigos de error.
+Al revisar una contribución comprueba la rama base el commit exacto los archivos afectados y las pruebas ejecutadas.
+La documentación técnica no debe afirmar soporte de teclado USB si no existe un driver integrado y probado.
+Un ejemplo de configuración debe usar opciones reales del programa y fallar claramente cuando falta una dependencia.
+Los mensajes del bootloader no sustituyen las pruebas de inicialización de memoria y planificación del kernel.
+El entrenamiento de ByteForge tokeniza texto y cuenta continuaciones locales; no ejecuta ni compila el texto del corpus.
