@@ -56,9 +56,13 @@ def interactive(model,length):
   if not prompt: continue
   print('ByteForge>',generate(model,length,prompt))
 def main():
- p=argparse.ArgumentParser(description=__doc__);p.add_argument('--model',type=Path,default=ROOT/'model.bfng');p.add_argument('--length',type=int,default=30);p.add_argument('--prompt',default='');p.add_argument('--interactive',action='store_true',help='iniciar una sesión de terminal');a=p.parse_args()
+ p=argparse.ArgumentParser(description=__doc__);p.add_argument('--model',type=Path,default=ROOT/'model.bfng');p.add_argument('--length',type=int,default=30);p.add_argument('--prompt',default='');p.add_argument('--interactive',action='store_true',help='iniciar una sesión de terminal');p.add_argument('--raw',action='store_true',help='imprimir tokens separados por espacios para comparar runtimes');a=p.parse_args()
  if not 0<=a.length<=10000:p.error('length must be 0..10000')
  model=load(a.model)
  if a.interactive: interactive(model,a.length)
- else: print(generate(model,a.length,a.prompt))
+ else:
+  if a.raw:
+   result=generate(model,a.length,a.prompt)
+   print(' '.join(tokenize(result)))
+  else: print(generate(model,a.length,a.prompt))
 if __name__=='__main__':main()
