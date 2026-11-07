@@ -17,5 +17,5 @@ for(const line of lines){const p=line.split('\t');
 if(vocab.some(x=>x===undefined)) fail('missing vocabulary token');
 const steps=Number(rawSteps);if(!Number.isInteger(steps)||steps<0||steps>10000)fail('bad token count');
 let ctx=Array(order).fill(bos), out=[];
-for(let k=0;k<steps;k++){let best=null;for(const e of edges)if(e.ctx.every((x,i)=>x===ctx[i])&&(!best||e.count>best.count||(e.count===best.count&&e.next<best.next)))best=e;if(!best)break;out.push(vocab[best.next]);ctx=[...ctx.slice(1),best.next];}
+for(let k=0;k<steps;k++){let best=null;for(const e of edges)if(e.ctx.every((x,i)=>x===ctx[i])&&(!best||e.count>best.count||(e.count===best.count&&e.next<best.next)))best=e;if(!best)break;if(vocab[best.next]==='__BYTEFORGE_EOS__')break;out.push(vocab[best.next]);ctx=[...ctx.slice(1),best.next];}
 console.log(out.join(' '));
