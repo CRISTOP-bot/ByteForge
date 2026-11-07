@@ -1,22 +1,57 @@
-import unittest
-from train import train
-from chat import generate
-
-
-class TinyModelTests(unittest.TestCase):
-    def test_training_records_contexts(self):
-        model = train("hola hola")
-        self.assertEqual(model["format"], "papuu-char-ngram-v1")
-        self.assertGreater(len(model["contexts"]), 0)
-
-    def test_generation_is_repeatable_with_seed(self):
-        model = train("hola mundo. hola papuu.")
-        self.assertEqual(generate(model, "hola", 24, 7), generate(model, "hola", 24, 7))
-
-    def test_empty_corpus_rejected(self):
-        with self.assertRaises(ValueError):
-            train("  ")
-
-
-if __name__ == "__main__":
-    unittest.main()
+name: Build, test and cross-check runtimes
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m unittest discover -s tests -v
+      - run: python src/python/train.py --output model.bfng
+      - run: python src/python/chat.py --length 12 > expected.txt
+      - run: python -m py_compile src/python/*.py
+  native:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: dtolnay/rust-toolchain@stable
+      - run: sudo apt-get update && sudo apt-get install -y nasm
+      - run: python src/python/train.py --output model.bfng
+      - run: python src/python/chat.py --length 12 > expected.txt
+      - run: cc -std=c11 -O2 -Wall -Wextra -Werror src/c/byteforge.c -o byteforge-c
+      - run: c++ -std=c++17 -O2 -Wall -Wextra -Werror src/cpp/byteforge.cpp -o byteforge-cpp
+      - run: cd src/rust && cargo build --release
+      - run: cd src/go && go build -o ../../byteforge-go .
+      - run: cd src/java && javac ByteForge.java
+      - run: node --check src/js/byteforge.mjs
+      - run: nasm -f elf64 src/asm/choose.asm -o choose.o
+      - run: cc -std=c11 -Wall -Wextra -Werror src/asm/test_choose.c choose.o -o asm-test && ./asm-test
+      - name: Cross-check deterministic output for every runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./byteforge-c model.bfng 12 > c.txt
+          ./byteforge-cpp model.bfng 12 > cpp.txt
+          src/rust/target/release/byteforge model.bfng 12 > rust.txt
+          ./byteforge-go model.bfng 12 > go.txt
+          (cd src/java && java ByteForge ../../model.bfng 12) > java.txt
+          node src/js/byteforge.mjs model.bfng 12 > js.txt
+          for output in c.txt cpp.txt rust.txt go.txt java.txt js.txt; do diff -u expected.txt "$output"; done

@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+model.bfng
+expected*.txt
+byteforge-c
+byteforge-cpp
+byteforge-go
+*.class
+*.o
+src/rust/target/

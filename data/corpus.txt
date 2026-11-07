@@ -1,22 +1,106 @@
-Hola, ¿qué tal? Me llamo Papuu y soy un pequeño modelo de lenguaje experimental.
-Hola papuu, ¿cómo estás? Estoy aprendiendo a escribir con ejemplos en español.
-¿Qué puedes hacer? Puedo generar texto breve usando patrones que aprendí durante el entrenamiento.
-No conozco todo ni siempre tengo razón. Soy un experimento pequeño para aprender cómo funciona la inteligencia artificial.
-La inteligencia artificial aprende patrones a partir de ejemplos. Un modelo de lenguaje predice qué palabra o carácter podría venir después.
-Entrenar un modelo significa ajustar sus parámetros o contar patrones en los datos de entrenamiento.
-Este proyecto crea un modelo desde cero con Python y no descarga modelos preentrenados.
-El código es pequeño, abierto y fácil de modificar. Puedes cambiar el corpus y volver a entrenar el modelo.
-Python es un lenguaje de programación útil para aprender ciencia de datos e inteligencia artificial.
-Un programa recibe datos, procesa información y produce un resultado. Las pruebas ayudan a comprobar que funciona como esperamos.
-Me gusta ayudar a las personas a aprender programación. Podemos resolver problemas paso a paso.
-Si el resultado parece extraño, recuerda que este modelo tiene muy pocos ejemplos y un contexto limitado.
-Un modelo pequeño no entiende el mundo como una persona. Solo aprende regularidades estadísticas de los textos.
-La tecnología puede ser creativa y útil cuando se usa con cuidado y se explican sus límites.
-¿Qué es entrenar desde cero? Significa que el modelo empieza sin parámetros aprendidos de otro modelo.
-Este modelo usa una tabla de frecuencias de caracteres. Para cada contexto corto, guarda qué carácter apareció después.
-Durante la generación, el modelo elige el siguiente carácter según las frecuencias que aprendió.
-Puedes ejecutar el entrenamiento con python train.py y conversar con python chat.py.
-¡Hola! ¿En qué puedo ayudarte hoy? Estoy aquí para conversar un ratito.
-Me llamo PapuuAI. Soy un modelo diminuto hecho para experimentar y aprender.
-Buenas, ¿qué onda? Vamos a probar este pequeño proyecto de inteligencia artificial.
-La curiosidad nos ayuda a descubrir cómo funcionan las cosas y a construir ideas nuevas.
+# ByteForge training corpus — Spanish systems programming and OS development.
+Un sistema operativo administra procesos memoria dispositivos archivos permisos y llamadas al sistema.
+El kernel inicia el sistema configura interrupciones prepara memoria física y virtual y entrega el control al planificador.
+El kernel debe validar cada puntero de usuario antes de copiar datos a memoria del núcleo.
+Una llamada al sistema cambia de modo usuario a modo kernel mediante una instrucción controlada por la arquitectura.
+La tabla de páginas traduce direcciones virtuales en direcciones físicas y define permisos de lectura escritura y ejecución.
+El asignador físico administra marcos de páginas; el asignador virtual administra regiones y espacios de direcciones.
+No escribas en una dirección física sin mapearla correctamente en el espacio virtual del kernel.
+El planificador guarda el contexto del proceso saliente y restaura el contexto del siguiente proceso ejecutable.
+Un cambio de contexto debe preservar registros la pila y el estado necesario para reanudar la tarea.
+Las interrupciones deben reconocer el dispositivo y enviar el fin de interrupción al controlador adecuado.
+Los controladores de dispositivo deben validar registros y manejar errores reales, no simular éxito.
+Un sistema de archivos debe comprobar límites, permisos y errores de entrada y salida.
+El cargador ELF valida cabeceras segmentos tamaños y direcciones antes de mapear un ejecutable.
+Un bootloader entrega al kernel un mapa de memoria y los argumentos de arranque definidos por el protocolo.
+Para depurar un kernel usa símbolos de depuración registros seriales y una máquina virtual reproducible.
+Una prueba unitaria del host no demuestra que el kernel arranque en QEMU ni que funcione en hardware.
+En C, libera cada recurso exactamente una vez y comprueba el resultado de cada asignación de memoria.
+En C, un puntero nulo no se puede desreferenciar y un acceso fuera de límites causa comportamiento indefinido.
+Los enteros sin signo pueden desbordarse; valida tamaño y longitud antes de calcular offsets.
+Usa tipos de tamaño fijo para estructuras binarias y documenta el endianess del formato.
+Comprueba el valor de retorno de read y write; pueden completar menos bytes de los solicitados.
+En Rust, la propiedad y los préstamos ayudan a expresar quién puede modificar cada región de memoria.
+El código unsafe debe ser pequeño, documentado y respaldado por invariantes verificables.
+En Go, goroutines y canales facilitan servicios concurrentes pero no reemplazan el manejo de errores.
+En Java, el recolector de basura no administra recursos nativos como descriptores y memoria mapeada.
+Python sirve para automatizar builds analizar logs y generar imágenes de disco reproducibles.
+Un Makefile debe fallar si una herramienta falta y nunca sustituir una toolchain cruzada por el compilador del host.
+Fija versiones de dependencias verifica licencias y registra los comandos exactos de compilación.
+El compilador cruzado x86_64-elf genera binarios bare metal sin enlazar accidentalmente la libc del host.
+El linker script define direcciones de carga secciones símbolos y alineación del kernel.
+Una compilación exitosa no prueba que el sistema operativo sea funcional.
+Los tests deben comprobar resultados observables y cubrir límites errores y rutas de fallo.
+El arranque de BIOS y UEFI requiere pruebas distintas; no afirmes soporte sin iniciar la imagen.
+Un sistema seguro aplica mínimo privilegio valida entradas y evita ejecutar páginas de datos.
+La memoria compartida requiere sincronización explícita para prevenir condiciones de carrera.
+Los bloqueos deben tener reglas de orden para evitar interbloqueos.
+El registro serial permite inspeccionar el arranque temprano cuando todavía no hay consola gráfica.
+Para una regresión agrega primero un caso de prueba que reproduzca el fallo y luego corrige su causa.
+La documentación distingue lo implementado, lo experimental y lo planeado.
+No declares un driver funcional si solo contiene estructuras vacías o valores simulados.
+Un kernel pequeño puede enseñar arranque, memoria, interrupciones, procesos y sistemas de archivos con experimentos reales.
+ByteForge aprende patrones de código y texto técnico; no compila programas ni verifica que el código generado sea correcto.
+El modelo es educativo y limitado: genera secuencias probabilísticas, no entiende el significado como una persona.
+Para experimentar añade ejemplos con licencia clara y revisa el corpus antes de entrenar.
+La reproducibilidad requiere fijar corpus semilla versión de herramientas y parámetros de entrenamiento.
+Un buen informe de pruebas especifica el commit exacto, los comandos ejecutados y los resultados observados.
+La seguridad del kernel depende de contratos claros entre arquitectura memoria procesos y controladores.
+La arquitectura x86-64 define registros instrucciones excepciones y convenciones de llamada.
+En ensamblador x86-64 preserva los registros callee-saved y respeta la alineación de la pila antes de llamar funciones.
+Una rutina NASM recibe argumentos conforme a la ABI System V y devuelve el índice elegido en RAX.
+El firmware y el kernel se comunican mediante estructuras cuya versión y tamaño deben verificarse.
+El código de arranque temprano evita depender de memoria dinámica antes de inicializar el asignador.
+Los mensajes de error deben identificar el subsistema y conservar suficiente contexto para depurar.
+EOF
+cat > scratch/byteforge/train.py <<'EOF'
+#!/usr/bin/env python3
+"""Train ByteForge's portable token n-gram model from scratch."""
+import argparse
+import re
+from collections import Counter, defaultdict
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+TOKEN_RE = re.compile(r"[\w]+|[^\w\s]", re.UNICODE)
+
+
+def train(text: str, order: int = 2) -> str:
+    if order < 1:
+        raise ValueError("order must be at least 1")
+    tokens = TOKEN_RE.findall(text)
+    if not tokens:
+        raise ValueError("training corpus is empty")
+    vocab = sorted(set(tokens))
+    ids = {token: i for i, token in enumerate(vocab)}
+    counts = Counter(tuple(ids[t] for t in tokens[max(0, i-order):i]) + (ids[tokens[i]],)
+                     for i in range(len(tokens)))
+    # Include all contexts in fixed-width order; left-pad sentence start with <BOS>.
+    bos = len(vocab)
+    transitions = Counter()
+    history = [bos] * order
+    for token in tokens:
+        nxt = ids[token]
+        transitions[tuple(history) + (nxt,)] += 1
+        history = history[1:] + [nxt]
+    lines = [f"BYTEFORGE_NGRAM_V1\t{order}\t{len(vocab)}\t{bos}"]
+    lines += [f"v\t{i}\t{token.encode('utf-8').hex()}" for i, token in enumerate(vocab)]
+    lines += ["n\t" + "\t".join(map(str, key)) + f"\t{count}"
+              for key, count in sorted(transitions.items())]
+    return "\n".join(lines) + "\n"
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--corpus", type=Path, default=ROOT / "data/corpus.txt")
+    parser.add_argument("--output", type=Path, default=ROOT / "model.bfng")
+    parser.add_argument("--order", type=int, default=2)
+    args = parser.parse_args()
+    model = train(args.corpus.read_text(encoding="utf-8"), args.order)
+    args.output.write_text(model, encoding="ascii")
+    print(f"ByteForge entrenado: {sum(1 for line in model.splitlines() if line.startswith('n\t'))} transiciones -> {args.output}")
+
+
+if __name__ == "__main__":
+    main()
+EOF

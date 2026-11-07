@@ -1,37 +1,38 @@
-# PapuuAI
+# ByteForge
 
-Un modelo de lenguaje diminuto en español, entrenado desde cero con Python puro y un corpus de ejemplo incluido. No descarga ni reutiliza pesos de otros modelos.
+**ByteForge** es un modelo diminuto para aprender programación de sistemas y desarrollo de sistemas operativos: kernels, memoria, procesos, drivers, ABI, toolchains, pruebas y depuración.
 
-## Qué es y qué no es
+Es un modelo de lenguaje n-grama de tokens entrenado desde cero. No es un transformer, no comprende ni verifica código, y puede inventar respuestas o producir fragmentos incorrectos. Revisa, compila y prueba cualquier salida; no lo uses para producción ni decisiones de seguridad.
 
-PapuuAI es un modelo educativo de caracteres basado en frecuencias de n-gramas (contextos de 4 caracteres). Durante el entrenamiento cuenta qué carácter aparece después de cada contexto; al generar, elige caracteres según esas frecuencias. No comprende preguntas, no razona y puede producir texto incoherente. No es comparable con un asistente moderno ni está destinado a decisiones importantes.
+## Entrenar y probar
 
-## Ejecutar
-
-Necesita Python 3.10 o posterior; no requiere paquetes externos.
+Requiere Python 3.10+ y no instala paquetes:
 
 ```sh
 python train.py
-python chat.py --prompt "Hola" --length 180 --seed 7
-```
-
-Cambia `data/corpus.txt` para experimentar y vuelve a ejecutar `python train.py`. El modelo generado se guarda en `model.json`.
-
-## Pruebas
-
-```sh
+python chat.py --length 24
 python -m unittest discover -s tests -v
 ```
 
-GitHub Actions ejecuta las pruebas, entrena el modelo y comprueba una generación en cada push y pull request. El entrenamiento es pequeño y corre en CPU.
+El corpus educativo está en `data/corpus.txt` (CC0). Inspecciona calidad/licencias antes de ampliarlo. El entrenamiento produce `model.bfng`, un archivo de texto en formato compartido documentado en `docs/model-format.md`.
 
-## Estructura
+## Runtimes
 
-- `train.py`: cuenta los patrones del corpus y serializa el modelo.
-- `chat.py`: genera texto usando el modelo entrenado.
-- `data/corpus.txt`: corpus de demostración editable.
-- `tests/`: pruebas automáticas básicas.
+Los lectores C11, C++17, Rust, Go, Java 17+ y JavaScript (Node 20+) consumen el mismo modelo y generan con una regla determinista. Python es el entrenador canónico y runtime de referencia. NASM aporta una rutina x86-64 real para seleccionar una frecuencia; no se presenta como un runtime ni como el modelo completo. No son siete modelos distintos.
 
-## Licencia
+Ejemplos desde la raíz del repo tras entrenar:
 
-MIT. Consulta `LICENSE`.
+```sh
+cc -std=c11 -O2 src/c/byteforge.c -o byteforge-c && ./byteforge-c model.bfng 12
+c++ -std=c++17 -O2 src/cpp/byteforge.cpp -o byteforge-cpp && ./byteforge-cpp model.bfng 12
+(cd src/rust && cargo run --release -- ../../model.bfng 12)
+(cd src/go && go run . ../../model.bfng 12)
+(cd src/java && javac ByteForge.java && java ByteForge ../../model.bfng 12)
+node src/js/byteforge.mjs model.bfng 12
+```
+
+## CI y límites de verificación
+
+GitHub Actions entrena el modelo, corre pruebas, instala/compila los toolchains y compara la salida de los runtimes. El estado del workflow es la evidencia para las implementaciones remotas; que un archivo fuente exista no significa que ya esté compilado. En el entorno local de creación no hay compiladores ni runtimes de C, ASM, Rust, Go, Java o Node disponibles; solo pude ejecutar y probar Python aquí.
+
+Licencia del código: MIT (`LICENSE`). Licencia del corpus de ejemplo: CC0-1.0 (`data/LICENSE`).

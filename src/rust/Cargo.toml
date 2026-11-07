@@ -1,0 +1,8 @@
+[package]
+name = "byteforge"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "byteforge"
+path = "main.rs"
