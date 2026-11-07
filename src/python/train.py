@@ -8,7 +8,7 @@ ROOT=Path(__file__).resolve().parents[2]
 TOKEN_RE=re.compile(r"[\w]+|[^\w\s]",re.UNICODE)
 EOS="__BYTEFORGE_EOS__"
 def train(text,order=2):
- if order<1: raise ValueError('order must be at least 1')
+ if order<1 or order>8: raise ValueError('order must be between 1 and 8')
  sentences=[]
  for line in text.splitlines():
   if not line.strip() or line.lstrip().startswith('#'): continue

@@ -11,8 +11,11 @@ Requiere Python 3.10+ y no instala paquetes:
 ```sh
 python train.py
 python chat.py --prompt "kernel memory" --length 24
+python chat.py --interactive --length 24
 python -m unittest discover -s tests -v
 ```
+
+En modo interactivo escribe `/salir` para cerrar. El modelo carga una vez al arrancar la sesión; cada turno nuevo usa su propio prompt.
 
 El corpus educativo está en `data/corpus.txt` (CC0). Inspecciona calidad/licencias antes de ampliarlo. El entrenamiento produce `model.bfng`, un archivo de texto en formato compartido documentado en `docs/model-format.md`.
 
