@@ -24,6 +24,12 @@ class ByteForgeTests(unittest.TestCase):
   self.assertEqual(train('kernel memory kernel',2),train('kernel memory kernel',2))
  def test_order_changes_model_header(self):
   self.assertIn('BYTEFORGE_NGRAM_V1\t3\t',train('kernel memory process',3))
+ def test_generation_stops_at_example_boundary(self):
+  with tempfile.TemporaryDirectory() as d:
+   p=Path(d)/'model.bfng';p.write_text(train('kernel memory\ndriver interrupt',1),encoding='ascii')
+   self.assertEqual(generate(load(p),10,'kernel'),'kernel memory')
+ def test_eos_token_is_reserved(self):
+  with self.assertRaises(ValueError):train('kernel __BYTEFORGE_EOS__ memory',1)
  def test_reject_empty_corpus_and_bad_order(self):
   with self.assertRaises(ValueError):train('  ')
   with self.assertRaises(ValueError):train('kernel',0)

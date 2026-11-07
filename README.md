@@ -2,7 +2,7 @@
 
 **ByteForge** es un modelo diminuto para aprender programación de sistemas y desarrollo de sistemas operativos: kernels, memoria, procesos, drivers, ABI, toolchains, pruebas y depuración.
 
-Es un modelo de lenguaje n-grama de tokens entrenado desde cero. No es un transformer, no comprende ni verifica código, y puede inventar respuestas o producir fragmentos incorrectos. Revisa, compila y prueba cualquier salida; no lo uses para producción ni decisiones de seguridad.
+Es un modelo de lenguaje n-grama de tokens entrenado desde cero. El entrenador separa cada línea del corpus como un ejemplo distinto y agrega un token de fin; el generador se detiene al llegar a ese límite. El prompt inicia la generación desde el contexto conocido más cercano. No es un transformer, no comprende ni verifica código, y puede inventar respuestas o producir fragmentos incorrectos. Revisa, compila y prueba cualquier salida; no lo uses para producción ni decisiones de seguridad.
 
 ## Entrenar y probar
 

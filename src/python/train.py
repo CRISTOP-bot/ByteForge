@@ -6,14 +6,22 @@ from collections import Counter
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]
 TOKEN_RE=re.compile(r"[\w]+|[^\w\s]",re.UNICODE)
+EOS="__BYTEFORGE_EOS__"
 def train(text,order=2):
  if order<1: raise ValueError('order must be at least 1')
- text='\n'.join(line for line in text.splitlines() if line.strip() and not line.lstrip().startswith('#'))
- tokens=TOKEN_RE.findall(text)
- if not tokens: raise ValueError('training corpus is empty')
- vocab=sorted(set(tokens)); ids={t:i for i,t in enumerate(vocab)}; bos=len(vocab); hist=[bos]*order; transitions=Counter()
- for token in tokens:
-  nxt=ids[token]; transitions[tuple(hist)+(nxt,)]+=1; hist=hist[1:]+[nxt]
+ sentences=[]
+ for line in text.splitlines():
+  if not line.strip() or line.lstrip().startswith('#'): continue
+  tokens=TOKEN_RE.findall(line)
+  if tokens:
+   if EOS in tokens: raise ValueError('corpus contains reserved EOS token')
+   sentences.append(tokens+[EOS])
+ if not sentences: raise ValueError('training corpus is empty')
+ vocab=sorted({token for sentence in sentences for token in sentence}); ids={t:i for i,t in enumerate(vocab)}; bos=len(vocab); transitions=Counter()
+ for sentence in sentences:
+  history=[bos]*order
+  for token in sentence:
+   nxt=ids[token]; transitions[tuple(history)+(nxt,)]+=1; history=history[1:]+[nxt]
  lines=[f'BYTEFORGE_NGRAM_V1\t{order}\t{len(vocab)}\t{bos}']
  lines += [f'v\t{i}\t{t.encode("utf-8").hex()}' for i,t in enumerate(vocab)]
  lines += ['n\t'+'\t'.join(map(str,key))+f'\t{count}' for key,count in sorted(transitions.items())]
